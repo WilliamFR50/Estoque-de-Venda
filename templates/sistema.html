@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TigrinhoBet - Menu Principal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --cor-fundo-gradiente: linear-gradient(to bottom, #fff8f3, #ffd1b3, #ff9e7a);
+      --cor-texto: #1f1f1f;
+      --cor-primaria: rgba(255, 255, 255, 0.2);
+      --cor-hover: rgba(255, 255, 255, 0.35);
+      --cor-borda: rgba(255, 255, 255, 0.3);
+      --sombra-botao: rgba(0, 0, 0, 0.1);
+      --cor-destaque: #ff5e57;
+      --cor-destaque-hover: #e14b47;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--cor-fundo-gradiente);
+      min-height: 100vh;
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 1000px;
+      width: 90%;
+      padding: 40px 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      color: var(--cor-texto);
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      font-size: 1.1rem;
+      color: var(--cor-texto);
+      opacity: 0.8;
+    }
+
+    .shortcuts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .shortcut-card {
+      background: var(--cor-primaria);
+      border: 1px solid var(--cor-borda);
+      border-radius: 15px;
+      padding: 30px;
+      backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--cor-texto);
+      display: block;
+      text-align: center;
+    }
+
+    .shortcut-card:hover {
+      transform: translateY(-5px);
+      background: var(--cor-hover);
+      border-color: var(--cor-destaque);
+      box-shadow: 0 10px 25px var(--sombra-botao);
+    }
+
+    .shortcut-card.sair:hover {
+      background: var(--cor-destaque);
+      color: white;
+    }
+
+    .card-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.3);
+      font-size: 1.8rem;
+      color: var(--cor-destaque);
+      margin: 0 auto 15px auto;
+    }
+
+    .shortcut-card.sair .card-icon {
+      color: var(--cor-destaque);
+    }
+
+    .card-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .card-description {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      line-height: 1.4;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 15px;
+      }
+      
+      .header h1 {
+        font-size: 2rem;
+      }
+      
+      .shortcuts-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+      
+      .shortcut-card {
+        padding: 25px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1> Menu Principal</h1>
+      <p>Selecione uma opção para continuar</p>
+    </div>
+
+    <div class="shortcuts-grid">
+      <!-- Produtos -->
+      <a href="/dono" class="shortcut-card">
+        <div class="card-icon">
+          <i class="fas fa-box"></i>
+        </div>
+        <div class="card-title">PRODUTOS</div>
+        <div class="card-description">
+          Gerenciar catálogo e estoque
+        </div>
+      </a>
+
+      <!-- Clientes -->
+      <a href="/clientes" class="shortcut-card">
+        <div class="card-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="card-title">CLIENTES</div>
+        <div class="card-description">
+          Cadastro e histórico
+        </div>
+      </a>
+
+      <!-- Serviços -->
+      <a href="" class="shortcut-card">
+        <div class="card-icon">
+          <i class="fas fa-concierge-bell"></i>
+        </div>
+        <div class="card-title">SERVIÇOS</div>
+        <div class="card-description">
+          Serviços e agendamentos
+        </div>
+      </a>
+
+      <!-- Novo Pedido -->
+      <a href="" class="shortcut-card">
+        <div class="card-icon">
+          <i class="fas fa-plus-circle"></i>
+        </div>
+        <div class="card-title">NOVO PEDIDO</div>
+        <div class="card-description">
+          Criar nova venda
+        </div>
+      </a>
+
+      <!-- Pesquisar -->
+      <a href="" class="shortcut-card">
+        <div class="card-icon">
+          <i class="fas fa-search"></i>
+        </div>
+        <div class="card-title">PESQUISAR</div>
+        <div class="card-description">
+          Busca no sistema
+        </div>
+      </a>
+
+      <!-- Resumo -->
+      <a href="" class="shortcut-card">
+        <div class="card-icon">
+          <i class="fas fa-chart-bar"></i>
+        </div>
+        <div class="card-title">RESUMO</div>
+        <div class="card-description">
+          Dashboard e métricas
+        </div>
+      </a>
+
+      <!-- Gestão -->
+      <a href="/gestao" class="shortcut-card">
+        <div class="card-icon">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="card-title">GESTÃO</div>
+        <div class="card-description">
+          Relatórios financeiros
+        </div>
+      </a>
+
+      <!-- Relatório -->
+      <a href="" class="shortcut-card">
+        <div class="card-icon">
+          <i class="fas fa-file-alt"></i>
+        </div>
+        <div class="card-title">RELATÓRIO</div>
+        <div class="card-description">
+          Relatórios personalizados
+        </div>
+      </a>
+
+      <!-- Sair -->
+      <a href="/" class="shortcut-card sair">
+        <div class="card-icon">
+          <i class="fas fa-sign-out-alt"></i>
+        </div>
+        <div class="card-title">SAIR</div>
+        <div class="card-description">
+          Sair do sistema
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // Efeitos de hover suaves
+    document.querySelectorAll('.shortcut-card').forEach(card => {
+      card.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-5px)';
+      });
+      
+      card.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0)';
+      });
+    });
+  </script>
+</body>
+</html>

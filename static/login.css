@@ -1,0 +1,89 @@
+.box-login {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 360px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    margin: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.box-login h2 {
+    color: #000000;
+    font-weight: 700;
+    font-size: 28px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.box-login input {
+    padding: 12px 14px;
+    border: none;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    outline: none;
+    transition: 0.3s;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.box-login input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.box-login input:focus {
+    outline: 2px solid rgba(255, 163, 76, 0.8);
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 10px rgba(255, 163, 76, 0.3);
+}
+
+.btn-login {
+    padding: 12px;
+    border: none;
+    background-color: rgba(255, 94, 87, 0.9);
+    color: #fff;
+    font-weight: 700;
+    font-size: 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 12px rgba(255, 94, 87, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-login:hover {
+    background-color: rgba(225, 75, 71, 0.9);
+    box-shadow: 0 8px 20px rgba(225, 75, 71, 0.5);
+    transform: translateY(-2px);
+}
+
+.link-cadastro {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: underline;
+    margin-top: 8px;
+    transition: color 0.3s;
+    cursor: pointer;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.link-cadastro:hover {
+    color: #ffffff;
+}
+
+.container-login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}

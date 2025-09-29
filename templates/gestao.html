@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TigrinhoBet</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="static/nav.css">
+  <link rel="stylesheet" href="static/base.css">
+  <style>
+    :root {
+      --cor-fundo-gradiente: linear-gradient(to bottom, #fff8f3, #ffd1b3, #ff9e7a);
+      --cor-texto: #1f1f1f;
+      --cor-primaria: rgba(255, 255, 255, 0.2);
+      --cor-hover: rgba(255, 255, 255, 0.35);
+      --cor-borda: rgba(255, 255, 255, 0.3);
+      --sombra-botao: rgba(0, 0, 0, 0.1);
+      --cor-destaque: #ff5e57;
+      --cor-destaque-hover: #e14b47;
+      --cor-sucesso: #4CAF50;
+      --cor-erro: #F44336;
+      --cor-info: #2196F3;
+      --cor-warning: #FF9800;
+      --primary-color: #1f1f1f;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--cor-fundo-gradiente);
+      min-height: 100vh;
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      animation: fadeIn 0.6s ease-out;
+      width: 100%;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-role {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .role-owner {
+      background-color: var(--cor-destaque);
+      color: white;
+    }
+
+    .role-employee {
+      background-color: var(--cor-info);
+      color: white;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 28px;
+    }
+
+    /* Dashboard Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(315px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .dashboard-card {
+      background: var(--cor-primaria);
+      border: 1px solid var(--cor-borda);
+      border-radius: 12px;
+      padding: 20px;
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .card-title {
+      font-weight: 600;
+      font-size: 16px;
+      color: var(--cor-texto);
+    }
+
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .card-value {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .card-positive {
+      color: var(--cor-sucesso);
+    }
+
+    .card-negative {
+      color: var(--cor-erro);
+    }
+
+    .card-footer {
+      margin-top: auto;
+      font-size: 14px;
+      color: var(--cor-texto);
+      opacity: 0.8;
+    }
+
+    /* Charts - TAMANHO REDUZIDO */
+    .charts-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .chart-card {
+      background: var(--cor-primaria);
+      border: 1px solid var(--cor-borda);
+      border-radius: 12px;
+      padding: 15px;
+      backdrop-filter: blur(8px);
+      height: 300px; /* Altura fixa menor */
+    }
+
+    .chart-title {
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: var(--cor-texto);
+      text-align: center;
+    }
+
+    /* Container dos gráficos menores */
+    .chart-container {
+      position: relative;
+      height: 220px; /* Altura reduzida dos gráficos */
+      width: 100%;
+    }
+
+    /* Tabelas */
+    .table-container {
+      background: var(--cor-primaria);
+      border: 1px solid var(--cor-borda);
+      border-radius: 12px;
+      padding: 20px;
+      backdrop-filter: blur(8px);
+      margin-bottom: 30px;
+    }
+
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .table-title {
+      font-weight: 600;
+      font-size: 18px;
+      color: var(--cor-texto);
+    }
+
+    .finance-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .finance-table th, .finance-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--cor-borda);
+    }
+
+    .finance-table th {
+      background-color: rgba(255, 255, 255, 0.2);
+      font-weight: 600;
+    }
+
+    .finance-table tr:hover {
+      background-color: var(--cor-hover);
+    }
+
+    /* Filtros */
+    .filters-container {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .filter-select {
+      padding: 12px 14px;
+      border: none;
+      border-radius: 10px;
+      background-color: var(--cor-primaria);
+      font-family: 'Inter', sans-serif;
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--cor-borda);
+      box-shadow: inset 0 2px 6px var(--sombra-botao);
+      min-width: 200px;
+    }
+
+    /* Botões */
+    .btn {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background-color: var(--cor-destaque);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--cor-destaque-hover);
+    }
+
+    .btn-secondary {
+      background-color: #9e9e9e;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background-color: #7a7a7a;
+    }
+
+  </style>
+</head>
+<body>
+
+    <div class="header-container">
+        <nav class="nav-bar">
+            <a href="/dono">PRODUTOS</a>
+            <a href="/clientes">CLIENTES</a>
+            <a href="">SERVIÇOS</a>
+            <a href="">NOVO PEDIDO</a>
+            <a href="">PESQUISAR</a>
+            <a href="">RESUMO</a>
+            <a href="/gestao">GESTÃO</a>
+            <a href="">RELÁTORIO</a>
+            <a href="/">SAIR</a>
+        </nav>
+  </div>
+  
+  <div class="header-container">
+    <h1>Gerenciamento da Gestão</h1>
+  </div>
+
+
+    <!-- Cards de Métricas -->
+    <div class="dashboard-grid">
+      <div class="dashboard-card">
+        <div class="card-header">
+          <div class="card-title">Receita Total</div>
+          <div class="card-icon">
+            <i class="fas fa-dollar-sign" style="color: var(--cor-sucesso);"></i>
+          </div>
+        </div>
+        <div class="card-value card-positive" id="total-revenue">R$ 12.458,00</div>
+        <div class="card-footer">+12% em relação ao mês anterior</div>
+      </div>
+      
+      <div class="dashboard-card">
+        <div class="card-header">
+          <div class="card-title">Lucro Líquido</div>
+          <div class="card-icon">
+            <i class="fas fa-chart-line" style="color: var(--cor-info);"></i>
+          </div>
+        </div>
+        <div class="card-value card-positive" id="net-profit">R$ 5.328,00</div>
+        <div class="card-footer">+8% em relação ao mês anterior</div>
+      </div>
+      
+      <div class="dashboard-card">
+        <div class="card-header">
+          <div class="card-title">Total de Vendas</div>
+          <div class="card-icon">
+            <i class="fas fa-shopping-cart" style="color: var(--cor-destaque);"></i>
+          </div>
+        </div>
+        <div class="card-value" id="total-sales">248</div>
+        <div class="card-footer">+15% em relação ao mês anterior</div>
+      </div>
+      
+      <div class="dashboard-card">
+        <div class="card-header">
+          <div class="card-title">Custo com Despesas</div>
+          <div class="card-icon">
+            <i class="fas fa-money-bill-wave" style="color: var(--cor-erro);"></i>
+          </div>
+        </div>
+        <div class="card-value card-negative" id="total-expenses">R$ 2.845,00</div>
+        <div class="card-footer">+5% em relação ao mês anterior</div>
+      </div>
+    </div>
+
+    <!-- Gráficos MENORES -->
+    <div class="charts-container">
+      <div class="chart-card">
+        <div class="chart-title">Receita vs Despesas (Últimos 6 Meses)</div>
+        <div class="chart-container">
+          <canvas id="revenueExpensesChart"></canvas>
+        </div>
+      </div>
+      
+      <div class="chart-card">
+        <div class="chart-title">Vendas por Categoria</div>
+        <div class="chart-container">
+          <canvas id="salesByCategoryChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabela de Últimas Vendas -->
+    <div class="table-container">
+      <div class="table-header">
+        <div class="table-title">Últimas Vendas</div>
+      </div>
+      <table class="finance-table">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Produto</th>
+            <th>Cliente</th>
+            <th>Valor</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>20/10/2023</td>
+            <td>Tigrinho VIP</td>
+            <td>Carlos Silva</td>
+            <td>R$ 500,00</td>
+            <td><span style="color: var(--cor-sucesso);">Concluído</span></td>
+          </tr>
+          <tr>
+            <td>19/10/2023</td>
+            <td>Pacote Promocional</td>
+            <td>Ana Santos</td>
+            <td>R$ 280,00</td>
+            <td><span style="color: var(--cor-sucesso);">Concluído</span></td>
+          </tr>
+          <tr>
+            <td>18/10/2023</td>
+            <td>Super Bônus</td>
+            <td>João Oliveira</td>
+            <td>R$ 400,00</td>
+            <td><span style="color: var(--cor-warning);">Processando</span></td>
+          </tr>
+          <tr>
+            <td>17/10/2023</td>
+            <td>Recarga Rápida</td>
+            <td>Maria Costa</td>
+            <td>R$ 100,00</td>
+            <td><span style="color: var(--cor-sucesso);">Concluído</span></td>
+          </tr>
+          <tr>
+            <td>16/10/2023</td>
+            <td>Cashback Especial</td>
+            <td>Pedro Alves</td>
+            <td>R$ 180,00</td>
+            <td><span style="color: var(--cor-sucesso);">Concluído</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Tabela de Despesas Recentes -->
+    <div class="table-container">
+      <div class="table-header">
+        <div class="table-title">Despesas Recentes</div>
+      </div>
+      <table class="finance-table">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Descrição</th>
+            <th>Categoria</th>
+            <th>Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>15/10/2023</td>
+            <td>Manutenção do Sistema</td>
+            <td>Tecnologia</td>
+            <td>R$ 500,00</td>
+          </tr>
+          <tr>
+            <td>12/10/2023</td>
+            <td>Marketing Digital</td>
+            <td>Marketing</td>
+            <td>R$ 1.200,00</td>
+          </tr>
+          <tr>
+            <td>10/10/2023</td>
+            <td>Salários</td>
+            <td>Pessoal</td>
+            <td>R$ 3.500,00</td>
+          </tr>
+          <tr>
+            <td>05/10/2023</td>
+            <td>Hospedagem</td>
+            <td>Tecnologia</td>
+            <td>R$ 300,00</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // Dados para os gráficos
+    const revenueExpensesData = {
+      labels: ['Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro'],
+      datasets: [
+        {
+          label: 'Receita',
+          data: [8000, 9500, 10200, 11000, 11800, 12458],
+          borderColor: '#4CAF50',
+          backgroundColor: 'rgba(76, 175, 80, 0.2)',
+          fill: true,
+          tension: 0.4
+        },
+        {
+          label: 'Despesas',
+          data: [3200, 3500, 3700, 4000, 4200, 4845],
+          borderColor: '#F44336',
+          backgroundColor: 'rgba(244, 67, 54, 0.2)',
+          fill: true,
+          tension: 0.4
+        }
+      ]
+    };
+
+    const salesByCategoryData = {
+      labels: ['Roupas', 'Acessórios', 'Itens de Limpeza', 'Comidas', 'Bebidas'],
+      datasets: [{
+        label: 'Vendas por Categoria',
+        data: [45, 25, 15, 10, 5],
+        backgroundColor: [
+          '#FF5E57',
+          '#4CAF50',
+          '#2196F3',
+          '#FF9800',
+          '#9C27B0'
+        ],
+        hoverOffset: 4
+      }]
+    };
+
+    // Inicialização dos gráficos
+    document.addEventListener('DOMContentLoaded', function() {
+      // Gráfico de Receita vs Despesas
+      const revenueExpensesCtx = document.getElementById('revenueExpensesChart').getContext('2d');
+      new Chart(revenueExpensesCtx, {
+        type: 'line',
+        data: revenueExpensesData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false, // Permite controlar a proporção
+          plugins: {
+            legend: {
+              position: 'top',
+            },
+            title: {
+              display: false
+            }
+          }
+        }
+      });
+
+      // Gráfico de Vendas por Categoria
+      const salesByCategoryCtx = document.getElementById('salesByCategoryChart').getContext('2d');
+      new Chart(salesByCategoryCtx, {
+        type: 'doughnut',
+        data: salesByCategoryData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false, // Permite controlar a proporção
+          plugins: {
+            legend: {
+              position: 'bottom',
+            }
+          }
+        }
+      });
+
+    });
+  </script>
+</body>
+</html>

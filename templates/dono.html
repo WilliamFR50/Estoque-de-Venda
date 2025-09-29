@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TigrinhoBet - Sistema de Produtos</title>
+  <link rel="stylesheet" href="static/base.css">
+  <link rel="stylesheet" href="static/pesquisa.css">
+  <link rel="stylesheet" href="static/nav.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  
+  <div class="header-container">
+    
+    <nav class="nav-bar">
+      <a href="/dono">PRODUTOS</a>
+      <a href="/clientes">CLIENTES</a>
+      <a href="">SERVIÇOS</a>
+      <a href="">NOVO PEDIDO</a>
+      <a href="">PESQUISAR</a>
+      <a href="">RESUMO</a>
+      <a href="/gestao">GESTÃO</a>
+      <a href="">RELÁTORIO</a>
+      <a href="/">SAIR</a>
+    </nav>
+
+  </div>
+
+  <section>
+    <div class="container">
+      <div class="pesquisas">
+      <h1 style="text-align: center; color: var(--primary-color);">Gerenciamento de Produtos</h1>
+      
+      
+      <div class="stats-bar">
+        <div class="stat-item">Total de Produtos: <span class="stat-value" id="total-products">0</span></div>
+        <div class="stat-item">Disponíveis: <span class="stat-value" id="available-products">0</span></div>
+        <div class="stat-item">Esgotados: <span class="stat-value" id="unavailable-products">0</span></div>
+        <div class="stat-item">Categorias: <span class="stat-value" id="total-categories">0</span></div>
+      </div>
+      
+      <div class="filters-container">
+        <select class="filter-select" id="sort-select">
+          <option value="name">Ordenar por: Nome (A-Z)</option>
+          <option value="category">Ordenar por: Categoria</option>
+          <option value="price-asc">Ordenar por: Preço (Menor-Maior)</option>
+          <option value="price-desc">Ordenar por: Preço (Maior-Menor)</option>
+        </select>
+        
+        <select class="filter-select" id="category-filter">
+          <option value="all">Todas as categorias</option>
+        </select>
+        
+        <select class="filter-select" id="availability-filter">
+          <option value="all">Todos os status</option>
+          <option value="available">Disponíveis</option>
+          <option value="unavailable">Esgotados</option>
+        </select>
+      </div>
+      
+      <div class="top-search-container">
+        <input type="text" id="search-input" placeholder="Pesquisar por nome ou categoria...">
+        <button id="search-button">
+          <i class="fas fa-search"></i> Pesquisar
+        </button>
+      </div>
+      
+      <div class="view-controls">
+        <button class="view-btn active" id="categorized-view">
+          <i class="fas fa-layer-group"></i> Visualização por Categoria
+        </button>
+        <button class="view-btn" id="list-view">
+          <i class="fas fa-list"></i> Visualização em Lista
+        </button>
+      </div>
+      
+      <div class="products-container" id="products-container">
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="{{ url_for('static', filename='scripts/dono.js') }}"></script>
+</body>
+</html>

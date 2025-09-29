@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TigrinhoBet</title>
+    <link rel="stylesheet" href="static/base.css"/>
+    <link rel="stylesheet" href="static/esq.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+</head>
+<body>
+    <div class="box_esq">
+        <h2>Esqueceu Senha</h2>
+        <p id="erro-senhas"></p>
+        <input type="email" name="email_esq" id="email_esq" placeholder="Email" required />
+        <input type="password" name="pass_esq_atual" id="pass_esq_atual" placeholder="Senha atual" required />
+        <input type="password" name="pass_esq_nova" id="pass_esq_nova" placeholder="Nova senha" required />
+        <input type="password" name="pass_esq_conf" id="pass_esq_conf" placeholder="Confirmar senha" required />
+        <button id="btn-confirmar" class="btn-esq">Confirmar</button>
+        <a href="/login">Voltar</a>
+    </div>
+
+    <script>
+        const novaSenha = document.getElementById('pass_esq_nova');
+        const confirmaSenha = document.getElementById('pass_esq_conf');
+        const mensagem = document.getElementById('erro-senhas');
+        const emailInput = document.getElementById('email_esq');
+        const senhaAtualInput = document.getElementById('pass_esq_atual');
+        const btnConfirmar = document.getElementById('btn-confirmar');
+
+        confirmaSenha.addEventListener('input', () => {
+            const original = novaSenha.value;
+            const confirmacao = confirmaSenha.value;
+
+            if (confirmacao.length === 0) {
+                mensagem.innerHTML = '';
+            } else if (confirmacao === original) {
+                mensagem.innerHTML = '<span style="color: green;">Senhas iguais!</span>';
+            } else {
+                mensagem.innerHTML = '<span style="color: red;">Senhas diferentes!</span>';
+            }
+        });
+
+        btnConfirmar.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            if (novaSenha.value !== confirmaSenha.value) {
+                mensagem.innerHTML = '<span style="color: red;">Erro: As senhas não coincidem!</span>';
+                return;
+            }
+
+            const data = new URLSearchParams();
+            data.append('email_esq', emailInput.value);
+            data.append('pass_esq_atual', senhaAtualInput.value);
+            data.append('pass_esq_nova', novaSenha.value);
+            data.append('pass_esq_conf', confirmaSenha.value);
+
+            fetch('/esq_senha', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: data.toString()
+            })
+            .then(res => res.json())
+            .then(json => {
+                if (json.error) {
+                    mensagem.innerHTML = `<span style="color: red;">${json.error}</span>`;
+                } else if (json.message) {
+                    mensagem.innerHTML = `<span style="color: green;">${json.message}</span>`;
+                    emailInput.value = '';
+                    senhaAtualInput.value = '';
+                    novaSenha.value = '';
+                    confirmaSenha.value = '';
+                }
+            })
+            .catch(() => {
+                mensagem.innerHTML = '<span style="color: red;">Erro na comunicação com o servidor.</span>';
+            });
+        });
+    </script>
+</body>
+</html>
