@@ -1,0 +1,23 @@
+<div class="container">
+    <!-- Filtros de Período -->
+    <div class="filters-container">
+      <select class="filter-select" id="period-filter">
+        <option value="today">Hoje</option>
+        <option value="week">Esta Semana</option>
+        <option value="month" selected>Este Mês</option>
+        <option value="quarter">Este Trimestre</option>
+        <option value="year">Este Ano</option>
+      </select>
+      
+      <select class="filter-select" id="category-filter">
+        <option value="all">Todas as Categorias</option>
+        <option value="apostas">Roupas</option>
+        <option value="bonus">Acessórios</option>
+        <option value="promocoes">Limpeza</option>
+        <option value="recargas">Carne</option>
+      </select>
+      
+      <button class="btn btn-primary" id="apply-filters">
+        <i class="fas fa-filter"></i> Aplicar Filtros
+      </button>
+    </div>
