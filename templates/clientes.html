@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TigrinhoBet</title>
+  <link rel="stylesheet" href="static/base.css">
+  <link rel="stylesheet" href="static/clientes.css">
+  <link rel="stylesheet" href="static/nav.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  
+  <div class="header-container">
+     <nav class="nav-bar">
+      <a href="/dono">PRODUTOS</a>
+      <a href="/clientes" style="background-color: var(--cor-destaque); color: white;">CLIENTES</a>
+      <a href="/novo_pedido">NOVO PRODUTO</a>
+      <a href="/vendas">VENDAS</a>
+      <a href="/gestao">GESTÃO</a>
+      <a href="">RELÁTORIO</a>
+      <a href="{{ url_for('logout') }}">SAIR</a>
+    </nav>
+  </div>
+
+  <section>
+    <div class="container">
+      <h1>Gerenciamento de Clientes</h1>
+      
+      <div class="stats-bar">
+        <div class="stat-item">Total de Clientes: <span class="stat-value" id="total-clients">0</span></div>
+        <div class="stat-item">Clientes Ativos: <span class="stat-value" id="active-clients">0</span></div>
+        <div class="stat-item">Inativos: <span class="stat-value" id="inactive-clients">0</span></div>
+      </div>
+      
+      <div class="filters-container">
+        <select class="filter-select" id="status-filter">
+          <option value="all">Todos os status</option>
+          <option value="active">Ativos</option>
+          <option value="inactive">Inativos</option>
+        </select>
+        
+        <select class="filter-select" id="sort-filter">
+          <option value="name">Ordenar por: Nome (A-Z)</option>
+          <option value="recent">Ordenar por: Mais recentes</option>
+          <option value="oldest">Ordenar por: Mais antigos</option>
+        </select>
+      </div>
+      
+      <div class="top-search-container">
+        <input type="text" id="search-input" placeholder="Pesquisar cliente por nome, e-mail ou telefone...">
+        <button id="search-button">
+          <i class="fas fa-search"></i> Pesquisar
+        </button>
+      </div>
+      
+      <div class="clients-container" id="clients-container">
+        <!-- Os clientes serão carregados dinamicamente via JavaScript -->
+      </div>
+      
+      <button class="add-client-btn" id="add-client-btn">
+        <i class="fas fa-plus"></i> Adicionar Novo Cliente
+      </button>
+    </div>
+  </section>
+
+  <script>
+  // Variável global para controle de edição
+  let editingClientId = null;
+
+  // Função para carregar clientes do servidor
+  async function loadClients(filters = {}) {
+      try {
+          const params = new URLSearchParams();
+          if (filters.status && filters.status !== 'all') {
+              params.append('status', filters.status);
+          }
+          if (filters.search) {
+              params.append('search', filters.search);
+          }
+
+          const response = await fetch(`/api/clientes?${params}`);
+          const data = await response.json();
+
+          if (response.ok) {
+              renderClients(data.clientes);
+              updateStats(data.estatisticas);
+          } else {
+              alert('Erro ao carregar clientes: ' + data.error);
+          }
+      } catch (error) {
+          alert('Erro ao carregar clientes: ' + error.message);
+      }
+  }
+
+  // Função para renderizar clientes
+  function renderClients(clients) {
+      const container = document.getElementById('clients-container');
+      container.innerHTML = '';
+      
+      if (clients.length === 0) {
+          container.innerHTML = '<div class="no-results">Nenhum cliente encontrado</div>';
+          return;
+      }
+      
+      clients.forEach(client => {
+          const clientCard = document.createElement('div');
+          clientCard.className = 'client-card';
+          clientCard.dataset.id = client.id;
+          
+          clientCard.innerHTML = `
+              <div class="client-header">
+                  <div class="client-name">${client.nome}</div>
+                  <div class="client-id">#${client.cliente_id}</div>
+              </div>
+              <div class="client-details">
+                  <div class="client-info">
+                      <span class="info-label">E-mail</span>
+                      <span class="info-value">${client.email}</span>
+                  </div>
+                  <div class="client-info">
+                      <span class="info-label">Telefone</span>
+                      <span class="info-value">${client.telefone}</span>
+                  </div>
+                  <div class="client-info">
+                      <span class="info-label">CPF</span>
+                      <span class="info-value">${client.cpf}</span>
+                  </div>
+                  <div class="client-info">
+                      <span class="info-label">Status</span>
+                      <span class="info-value status-value" style="color: ${client.status === 'active' ? 'var(--cor-sucesso)' : 'var(--cor-erro)'};">${client.status === 'active' ? 'Ativo' : 'Inativo'}</span>
+                  </div>
+              </div>
+              <div class="client-actions">
+                  <button class="action-btn edit-btn" data-id="${client.id}"><i class="fas fa-edit"></i> Editar</button>
+                  <button class="action-btn delete-btn" data-id="${client.id}"><i class="fas fa-trash"></i> Excluir</button>
+              </div>
+          `;
+          
+          container.appendChild(clientCard);
+      });
+      
+      // Adicionar event listeners aos botões
+      document.querySelectorAll('.edit-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+              const clientId = e.currentTarget.dataset.id;
+              openEditModal(clientId);
+          });
+      });
+      
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+              const clientId = e.currentTarget.dataset.id;
+              deleteClient(clientId);
+          });
+      });
+  }
+
+  // Função para atualizar estatísticas
+  function updateStats(stats) {
+      document.getElementById('total-clients').textContent = stats.total;
+      document.getElementById('active-clients').textContent = stats.ativos;
+      document.getElementById('inactive-clients').textContent = stats.inativos;
+  }
+
+  // Função para abrir modal de edição
+  async function openEditModal(clientId) {
+      try {
+          const response = await fetch(`/api/clientes`);
+          const data = await response.json();
+          
+          if (!response.ok) {
+              throw new Error(data.error);
+          }
+          
+          const client = data.clientes.find(c => c.id == clientId);
+          if (!client) {
+              alert('Cliente não encontrado');
+              return;
+          }
+          
+          editingClientId = clientId;
+          
+          // Criar modal de edição
+          const modal = document.createElement('div');
+          modal.className = 'modal';
+          modal.innerHTML = `
+              <div class="modal-content">
+                  <h2>Editar Cliente</h2>
+                  <form id="edit-client-form">
+                      <div class="form-group">
+                          <label for="edit-name">Nome:</label>
+                          <input type="text" id="edit-name" value="${client.nome}" required>
+                      </div>
+                      <div class="form-group">
+                          <label for="edit-email">E-mail:</label>
+                          <input type="email" id="edit-email" value="${client.email}" required>
+                      </div>
+                      <div class="form-group">
+                          <label for="edit-phone">Telefone:</label>
+                          <input type="text" id="edit-phone" value="${client.telefone}" required>
+                      </div>
+                      <div class="form-group">
+                          <label for="edit-cpf">CPF:</label>
+                          <input type="text" id="edit-cpf" value="${client.cpf}" required>
+                      </div>
+                      <div class="form-group">
+                          <label for="edit-status">Status:</label>
+                          <select id="edit-status">
+                              <option value="active" ${client.status === 'active' ? 'selected' : ''}>Ativo</option>
+                              <option value="inactive" ${client.status === 'inactive' ? 'selected' : ''}>Inativo</option>
+                          </select>
+                      </div>
+                      <div class="form-actions">
+                          <button type="button" class="cancel-btn">Cancelar</button>
+                          <button type="submit">Salvar Alterações</button>
+                      </div>
+                  </form>
+              </div>
+          `;
+          
+          document.body.appendChild(modal);
+          
+          // Event listeners do modal
+          document.getElementById('edit-client-form').addEventListener('submit', (e) => {
+              e.preventDefault();
+              saveClientChanges();
+          });
+          
+          document.querySelector('.cancel-btn').addEventListener('click', () => {
+              document.body.removeChild(modal);
+              editingClientId = null;
+          });
+          
+          // Fechar modal ao clicar fora
+          modal.addEventListener('click', (e) => {
+              if (e.target === modal) {
+                  document.body.removeChild(modal);
+                  editingClientId = null;
+              }
+          });
+      } catch (error) {
+          alert('Erro ao carregar dados do cliente: ' + error.message);
+      }
+  }
+
+  // Função para salvar alterações do cliente
+  async function saveClientChanges() {
+      const name = document.getElementById('edit-name').value;
+      const email = document.getElementById('edit-email').value;
+      const phone = document.getElementById('edit-phone').value;
+      const cpf = document.getElementById('edit-cpf').value;
+      const status = document.getElementById('edit-status').value;
+      
+      try {
+          const response = await fetch(`/api/clientes/${editingClientId}`, {
+              method: 'PUT',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                  nome: name,
+                  email: email,
+                  telefone: phone,
+                  cpf: cpf,
+                  status: status
+              })
+          });
+          
+          const data = await response.json();
+          
+          if (response.ok) {
+              // Fechar modal e atualizar lista
+              document.querySelector('.modal')?.remove();
+              filterClients();
+              editingClientId = null;
+              alert('Cliente atualizado com sucesso!');
+          } else {
+              alert('Erro ao atualizar cliente: ' + data.error);
+          }
+      } catch (error) {
+          alert('Erro ao atualizar cliente: ' + error.message);
+      }
+  }
+
+  // Função para excluir cliente
+  async function deleteClient(clientId) {
+      if (confirm('Tem certeza que deseja excluir este cliente?')) {
+          try {
+              const response = await fetch(`/api/clientes/${clientId}`, {
+                  method: 'DELETE'
+              });
+              
+              const data = await response.json();
+              
+              if (response.ok) {
+                  filterClients();
+                  alert('Cliente excluído com sucesso!');
+              } else {
+                  alert('Erro ao excluir cliente: ' + data.error);
+              }
+          } catch (error) {
+              alert('Erro ao excluir cliente: ' + error.message);
+          }
+      }
+  }
+
+  // Função para filtrar clientes
+  function filterClients() {
+      const searchTerm = document.getElementById('search-input').value;
+      const statusFilter = document.getElementById('status-filter').value;
+      
+      loadClients({
+          status: statusFilter,
+          search: searchTerm
+      });
+  }
+
+  // Função para abrir modal de adicionar cliente
+  function openAddClientModal() {
+      // Criar modal de adição
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.innerHTML = `
+          <div class="modal-content">
+              <h2>Adicionar Novo Cliente</h2>
+              <form id="add-client-form">
+                  <div class="form-group">
+                      <label for="add-name">Nome:</label>
+                      <input type="text" id="add-name" required>
+                  </div>
+                  <div class="form-group">
+                      <label for="add-email">E-mail:</label>
+                      <input type="email" id="add-email" required>
+                  </div>
+                  <div class="form-group">
+                      <label for="add-phone">Telefone:</label>
+                      <input type="text" id="add-phone" required>
+                  </div>
+                  <div class="form-group">
+                      <label for="add-cpf">CPF:</label>
+                      <input type="text" id="add-cpf" required>
+                  </div>
+                  <div class="form-group">
+                      <label for="add-status">Status:</label>
+                      <select id="add-status">
+                          <option value="active">Ativo</option>
+                          <option value="inactive">Inativo</option>
+                      </select>
+                  </div>
+                  <div class="form-actions">
+                      <button type="button" class="cancel-btn">Cancelar</button>
+                      <button type="submit">Adicionar Cliente</button>
+                  </div>
+              </form>
+          </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      // Event listeners do modal
+      document.getElementById('add-client-form').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          
+          const name = document.getElementById('add-name').value;
+          const email = document.getElementById('add-email').value;
+          const phone = document.getElementById('add-phone').value;
+          const cpf = document.getElementById('add-cpf').value;
+          const status = document.getElementById('add-status').value;
+          
+          try {
+              const response = await fetch('/api/clientes', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                      nome: name,
+                      email: email,
+                      telefone: phone,
+                      cpf: cpf,
+                      status: status
+                  })
+              });
+              
+              const data = await response.json();
+              
+              if (response.ok) {
+                  // Fechar modal e atualizar lista
+                  document.querySelector('.modal')?.remove();
+                  filterClients();
+                  alert('Cliente adicionado com sucesso!');
+              } else {
+                  alert('Erro ao adicionar cliente: ' + data.error);
+              }
+          } catch (error) {
+              alert('Erro ao adicionar cliente: ' + error.message);
+          }
+      });
+      
+      document.querySelector('.cancel-btn').addEventListener('click', () => {
+          document.body.removeChild(modal);
+      });
+      
+      // Fechar modal ao clicar fora
+      modal.addEventListener('click', (e) => {
+          if (e.target === modal) {
+              document.body.removeChild(modal);
+          }
+      });
+  }
+
+  // Adicionar estilos para o modal
+  function addModalStyles() {
+      const style = document.createElement('style');
+      style.textContent = `
+          .modal {
+              position: fixed;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              background-color: rgba(0, 0, 0, 0.5);
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              z-index: 1000;
+          }
+          
+          .modal-content {
+              background-color: white;
+              padding: 25px;
+              border-radius: 8px;
+              width: 90%;
+              max-width: 500px;
+              box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+          }
+          
+          .modal-content h2 {
+              margin-bottom: 20px;
+              color: var(--cor-primaria);
+          }
+          
+          .form-group {
+              margin-bottom: 15px;
+          }
+          
+          .form-group label {
+              color: black;
+              display: block;
+              margin-bottom: 5px;
+              font-weight: 600;
+          }
+          
+          .form-group input,
+          .form-group select {
+              width: 100%;
+              padding: 10px;
+              border: 1px solid rgb(0 0 0 / 20%);;
+              border-radius: 4px;
+              font-family: 'Inter', sans-serif;
+          }
+          
+          .form-actions {    
+              display: flex;
+              justify-content: flex-end;
+              gap: 10px;
+              margin-top: 20px;
+          }
+          
+          .form-actions button {
+              padding: 10px 20px;
+              border-radius: 4px;
+              cursor: pointer;
+              font-family: 'Inter', sans-serif;
+          }
+          
+          .form-actions button[type="submit"],
+          .form-actions button[type="button"] {
+              background-color: var(--cor-destaque);
+              color: white;
+              border: none;
+          }
+          
+          .form-actions .cancel-btn {
+              background-color: #6c757d;
+          }
+          
+          .form-actions button:hover {
+              opacity: 0.9;
+          }
+
+          .no-results {
+              text-align: center;
+              padding: 40px;
+              color: #666;
+              font-style: italic;
+          }
+      `;
+      document.head.appendChild(style);
+  }
+
+  // Event listeners
+  document.getElementById('search-button').addEventListener('click', filterClients);
+  document.getElementById('search-input').addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') {
+          filterClients();
+      }
+  });
+
+  document.getElementById('status-filter').addEventListener('change', filterClients);
+  document.getElementById('sort-filter').addEventListener('change', filterClients);
+
+  document.getElementById('add-client-btn').addEventListener('click', openAddClientModal);
+
+  // Inicializar a aplicação
+  document.addEventListener('DOMContentLoaded', () => {
+      addModalStyles();
+      loadClients();
+  });
+  </script>
+</body>
+</html>
